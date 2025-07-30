@@ -19,23 +19,28 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # ... (các phần khác của FastAPI app) ...
 
+# --- Thêm cấu hình CORS Middleware ---
+# Đảm bảo phần này nằm ngay SAU khi bạn định nghĩa 'app = FastAPI(...)'
+# và TRƯỚC khi bạn tải mô hình/preprocessor hoặc định nghĩa các endpoint.
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://127.0.0.1",
+    "http://127.0.0.1:8080",
+    "file://", # Cho phép khi mở file HTML trực tiếp từ máy tính
+    "null",    # Một số trình duyệt dùng "null" cho file:// protocol
+    "http://localhost:63342", # Cổng PyCharm dùng cho file HTML (nếu bạn vẫn dùng cách này)
+    "https://nguyen-hong-yen-creditdefaultapi.hf.space" # Tên miền Hugging Face Space của bạn
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost",
-        "http://localhost:8080",
-        "http://127.0.0.1",
-        "http://127.0.0.1:8080",
-        "file://", # Giữ lại nếu bạn có thể mở bằng cách kéo thả file
-        "null",    # Giữ lại cho trường hợp file://
-        "http://localhost:63342" # ĐẢM BẢO DÒNG NÀY CÓ VÀ ĐÚNG CHÍNH TẢ
-    ],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"], # Cho phép tất cả các phương thức (GET, POST, etc.)
+    allow_headers=["*"], # Cho phép tất cả các header
 )
-
-# ... (các phần còn lại của app.py) ... --- Kết thúc cấu hình CORS ---
+# --- KẾT THÚC cấu hình CORS Middleware ---
 
 # --- 2. Tải lại mô hình và trình tiền xử lý (ColumnTransformer) ---
 MODEL_PATH = 'xgboost_model.pkl'
